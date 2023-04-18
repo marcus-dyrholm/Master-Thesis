@@ -10,6 +10,8 @@ public class TelekinesisController : MonoBehaviour
 
     public bool palmOpen = false;
 
+    public TelekinesisInteraction left, right;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -19,7 +21,8 @@ public class TelekinesisController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(player.hands[0] != null)
+        Debug.Log(player.hands[1].transform.localEulerAngles.normalized);
+        if (player.hands[0] != null)
         {
             SteamVR_Behaviour_Skeleton skeleton = Player.instance.hands[0].skeleton;
 
@@ -36,6 +39,7 @@ public class TelekinesisController : MonoBehaviour
             {
                 Debug.Log("Palm open");
             }
+            
         }
     }
 }

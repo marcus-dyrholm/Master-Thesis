@@ -1,0 +1,105 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-6636074409848733262
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 5
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: crystal blue - Kopi
+  m_Shader: {fileID: -6465566751694194690, guid: b5d24e5d18da1d44da10073800162d29, type: 3}
+  m_ValidKeywords: []
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - Texture2D_51FEEBCE:
+        m_Texture: {fileID: 2800000, guid: fad9765a35536374695ea4ff22aca373, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_7E688CD7:
+        m_Texture: {fileID: 2800000, guid: 184444378ddaf0e4eb58c8c2aa7d18f9, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_892C9319:
+        m_Texture: {fileID: 2800000, guid: a5d8179e3ecea9d4bbcb3a90f188105d, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_994D52C6:
+        m_Texture: {fileID: 2800000, guid: c6b1852753064064c934878e83fc7cba, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_A1FECC89:
+        m_Texture: {fileID: 2800000, guid: ad257c195e31d0045816ef936dd6ab72, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_D1764973:
+        m_Texture: {fileID: 2800000, guid: 81aa7f78941abbc478b2821875897995, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - Texture2D_D3EC6B04:
+        m_Texture: {fileID: 2800000, guid: 171c45a16a68a5f4dbed6402925797a2, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - Boolean_1CEFE7E0: 0
+    - Boolean_58EEFDF0: 0
+    - Boolean_5BEF727A: 0
+    - Boolean_7F9A96B2: 0
+    - Boolean_869B759A: 0
+    - Vector1_13ED8FD2: 0
+    - Vector1_1D509081: 0
+    - Vector1_22FC2C6A: 0.5
+    - Vector1_29A12972: 500
+    - Vector1_2A3E3049: 1.37
+    - Vector1_2CEDEDFB: 0
+    - Vector1_2DEA5BE4: 0
+    - Vector1_5E32D086: 0
+    - Vector1_7E4AE9C7: 0
+    - Vector1_88DF1315: 0.5
+    - Vector1_922393F6: 50
+    - Vector1_BB67D10B: -0.37
+    - Vector1_C142373D: 0
+    - Vector1_C2EE962A: 85.1
+    - Vector1_CE2BA687: 0
+    - Vector1_D8593B06: 0
+    - Vector1_D9BC6EDD: 8.77
+    - Vector1_E4A983AF: 0
+    - Vector1_F3EA3A: 0
+    - Vector1_FF4BE5B1: 0.31
+    - _AtumConverter: 0
+    - _PlantsGrowSpeed: -0.02
+    - _PlantsSnowAmount: 1
+    - _WeetnesPlants: 0
+    - _WindDensity: 2
+    - _WindStrength: 0.3
+    m_Colors:
+    - Color_64D66B68: {r: 0.1009804, g: 0.02058824, b: 0.001470588, a: 0}
+    - Color_A39DE4B0: {r: 0, g: 0, b: 0, a: 0}
+    - Color_CF9CF7E0: {r: 1, g: 0.93247044, b: 0, a: 0}
+    - Vector2_42A30140: {r: 0.2, g: 0.1, b: 0, a: 0}
+    - Vector2_E66F20B0: {r: 2.4, g: 0.61, b: 0, a: 0}
+    - _SnowDirectionPlants: {r: 0.1, g: 0.1, b: 0.06, a: 0}
+    - _WindMovement: {r: 0, g: 0, b: 0, a: 0}
+  m_BuildTextureStacks: []

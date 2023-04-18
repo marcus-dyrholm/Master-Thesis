@@ -65,6 +65,8 @@ public class Telekinesis : MonoBehaviour
     public event Action<TelekinesisObject> OnAttach;
     public event Action<TelekinesisObject> OnDetach;
     public BoolEvent _activeStatus;
+    public UnityEvent telekinesisEnded;
+    public UnityEvent telekinesisStarted;
 
     [SerializeField] bool _trigger;
     public Vector3 localVelocity;
@@ -147,6 +149,7 @@ public class Telekinesis : MonoBehaviour
         {
 
             _activeStatus.Invoke(true);
+            telekinesisStarted.Invoke();
             if (_line != null && m_ActiveObject != null)
             {
                 _line.Attached(m_ActiveObject.transform);
@@ -334,6 +337,7 @@ public class Telekinesis : MonoBehaviour
                 _line.Detached();
             }
             _telekinesisActive = false;
+            telekinesisEnded.Invoke();
 
             if (m_ActiveObject != null)
             {
