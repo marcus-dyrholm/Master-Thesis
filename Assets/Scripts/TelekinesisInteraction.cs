@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.Animations;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
@@ -47,6 +49,7 @@ public class TelekinesisInteraction : MonoBehaviour
         offHand,
         either
     }
+    
     public ControllerAsignment controllerAsignment;
 
     private void Start()
@@ -66,7 +69,7 @@ public class TelekinesisInteraction : MonoBehaviour
 
         localVelocity = transform.InverseTransformDirection(this.GetComponent<HandPhysics>().handCollider.GetComponent<Rigidbody>().velocity);
 
-        if (telekinesis.m_ActiveObject != null && controllerAsignment == ControllerAsignment.mainHand)
+        if (telekinesis.m_ActiveObject != null)
         {
             controllerAsignment = ControllerAsignment.mainHand;
             otherHand.controllerAsignment = ControllerAsignment.offHand;
@@ -104,30 +107,43 @@ public class TelekinesisInteraction : MonoBehaviour
 
             //Rotation
 
-            GameObject ActiveGO = telekinesis.m_ActiveObject.gameObject;
-
-            Vector3 playerToObject = ActiveGO.transform.position - player.transform.position;
-            float rotationAngle = transform.rotation.eulerAngles.z;
-            if (rotationAngle > 180)
+            if (!otherHand.isRotating)
             {
-                rotationAngle -= 360;
+                GameObject ActiveGO = telekinesis.m_ActiveObject.gameObject;
+            
+                Vector3 playerToObject = ActiveGO.transform.position - player.transform.position;
+                float rotationAngle = transform.rotation.eulerAngles.z;
+                if (rotationAngle > 180)
+                {
+                    rotationAngle -= 360;
+                }
+                ActiveGO.transform.RotateAround(ActiveGO.transform.position, playerToObject, rotationAngle * 2 * Time.deltaTime);
             }
-            ActiveGO.transform.RotateAround(ActiveGO.transform.position, playerToObject, rotationAngle * 2 * Time.deltaTime);
-
 
         }
+        
+        if (controllerAsignment == ControllerAsignment.either || otherHand.controllerAsignment == ControllerAsignment.either || SteamVR_Actions._default.GrabPinch.GetStateUp(inputSource) )
+        {
+            isRotating = false;
+            telekinesis.enabled = true;
+        }
 
+        if (SteamVR_Actions._default.GrabPinch.GetStateDown(inputSource) && controllerAsignment == ControllerAsignment.offHand)
+        {
+            GrabbedForRotation();
+        }
+        
         if (controllerAsignment == ControllerAsignment.offHand && isRotating)
         {
             telekinesis.enabled = false;
             Rotate();
         }
 
-        if (SteamVR_Actions._default.SetDistance.GetStateDown(SteamVR_Input_Sources.Any))
+        if (SteamVR_Actions._default.SetDistance.GetStateDown(inputSource))
         {
             distanceSet();
         }
-        if (SteamVR_Actions._default.SetDistanceClose.GetStateDown(SteamVR_Input_Sources.Any))
+        if (SteamVR_Actions._default.SetDistanceClose.GetStateDown(inputSource))
         {
             distanceCloseSet();
         }
@@ -137,29 +153,37 @@ public class TelekinesisInteraction : MonoBehaviour
 
 
 
+
+
         //telekinesis.m_fDistance = map(localVelocity.z, -10, 10, -0.1f, 0.1f);
     }
 
-
+    private Vector3 initialForward;
     public void Rotate()
     {
-
-        Vector3 grabOffset = grabPoint - otherHandObject.position;
-        Vector3 grabDirection = palm.position - otherHandObject.position;
-        float angle = Vector3.SignedAngle(grabOffset, grabDirection, otherHandObject.right);
-        Quaternion rotation = Quaternion.AngleAxis(angle, otherHandObject.right);
-        otherHandObject.rotation = _initialRotation * rotation;
+        
+        
+        Vector3 handDirection = palm.position - otherHand.transform.position;
+        Quaternion lookRotation = Quaternion.LookRotation(handDirection, Vector3.up);
+        //Quaternion finalRotation = Quaternion.Euler(Vector3.Cross(lookRotation.eulerAngles,  _initialRotation.eulerAngles));
+        otherHandObject.rotation = lookRotation * quaternion.Euler(initialForward);
 
     }
 
     public void GrabbedForRotation()
     {
-        // Get the rotation for the grabbed object from the other hand
-        otherHandObject = otherHand.telekinesis.m_ActiveObject.transform;
-        _initialRotation = otherHandObject.rotation;
-        palm = this.GetComponent<HandPhysics>().handCollider.transform.Find("Sphere (3)");
-        grabPoint = palm.GetComponent<Collider>().ClosestPoint(otherHandObject.position);
-        isRotating = true;
+        if (controllerAsignment == ControllerAsignment.offHand)
+        {
+            
+            // Get the rotation for the grabbed object from the other hand
+            otherHandObject = otherHand.telekinesis.m_ActiveObject.transform;
+            _initialRotation = otherHandObject.rotation;
+            palm = this.GetComponent<HandPhysics>().handCollider.transform.GetChild(0).GetChild(3);
+            initialForward = otherHandObject.forward;
+            grabPoint = palm.GetComponent<Collider>().ClosestPoint(otherHand.transform.position);
+            isRotating = true;
+        }
+
     }
 
     public void ResetControllerStates()

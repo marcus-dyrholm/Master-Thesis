@@ -28,6 +28,8 @@ namespace Valve.VR
         public SteamVR_Action_Boolean onTouchAction;
         public BoolEvent _onTouch;
 
+        public SteamVR_Input_Sources inputSource = SteamVR_Input_Sources.Any;
+
         private void OnEnable()
         {
             if (hand == null)
@@ -103,24 +105,24 @@ namespace Valve.VR
                 _onTriggerUp.Invoke();
             }
 
-            if (onTriggerAction.stateDown)
+            if (SteamVR_Actions._default.GrabPinch.GetStateDown(inputSource))
             {
                 _trigger = true;
                 _onTrigger.Invoke(true);
             }
 
-            if (onTriggerAction.stateUp)
+            if (SteamVR_Actions._default.GrabPinch.GetStateUp(inputSource))
             {
                 _trigger = false;
                 _onTrigger.Invoke(false);
 
             }
 
-            if (onGripAction.stateDown)
+            if (SteamVR_Actions._default.GrabGrip.GetStateDown(inputSource))
             {
                 _onGrip.Invoke(true);
             }
-            if (onGripAction.stateUp)
+            if (SteamVR_Actions._default.GrabGrip.GetStateUp(inputSource))
             {
                 _onGrip.Invoke(false);
             }

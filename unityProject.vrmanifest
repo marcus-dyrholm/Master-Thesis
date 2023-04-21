@@ -5,7 +5,7 @@
       "app_key": "application.generated.unity.med710urp.exe",
       "launch_type": "url",
       "url": "steam://launch/",
-      "action_manifest_path": "D:\\MED710\\MED710\\Assets\\StreamingAssets\\SteamVR\\actions.json",
+      "action_manifest_path": "C:\\Users\\marcu\\Documents\\Skole\\Master Thesis\\Master-Thesis\\Assets\\StreamingAssets\\SteamVR\\actions.json",
       "strings": {
         "en_us": {
           "name": "MED 710 URP [Testing]"

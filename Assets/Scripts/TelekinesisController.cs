@@ -21,7 +21,7 @@ public class TelekinesisController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(player.hands[1].transform.localEulerAngles.normalized);
+//        Debug.Log(player.hands[1].transform.localEulerAngles.normalized);
         if (player.hands[0] != null)
         {
             SteamVR_Behaviour_Skeleton skeleton = Player.instance.hands[0].skeleton;
