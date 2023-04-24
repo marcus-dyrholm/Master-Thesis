@@ -126,7 +126,7 @@ namespace Valve.VR
             {
                 _onGrip.Invoke(false);
             }
-            if (onTouchAction.stateDown)
+            /*if (onTouchAction.stateDown)
             {
                 _onTouch.Invoke(true);
             }
@@ -134,7 +134,7 @@ namespace Valve.VR
             {
                 _onTouch.Invoke(false);
 
-            }
+            }*/
         }
     }
 }

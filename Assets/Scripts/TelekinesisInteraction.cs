@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Animations;
+using UnityEngine.UI;
 using Valve.VR;
 using Valve.VR.InteractionSystem;
 
@@ -29,7 +30,7 @@ public class TelekinesisInteraction : MonoBehaviour
 
     private GameObject _player;
 
-    private static float time;
+    //private static float time;
 
     public SteamVR_Action_Boolean setdistance; //Grab Pinch is the trigger, select from inspecter
     public SteamVR_Input_Sources inputSource = SteamVR_Input_Sources.Any;//which controller
@@ -40,8 +41,12 @@ public class TelekinesisInteraction : MonoBehaviour
     private Quaternion _initialRotation;
     private Vector3 grabPoint;
     bool isRotating;
-    private Transform otherHandObject;
+    public Transform otherHandObject;
     Transform palm;
+
+    private bool palmOpen;
+    public bool freezeRoutineRunning;
+    private RaycastHit hit;
 
     public enum ControllerAsignment
     {
@@ -51,6 +56,8 @@ public class TelekinesisInteraction : MonoBehaviour
     }
     
     public ControllerAsignment controllerAsignment;
+
+    public GameObject hitObject;
 
     private void Start()
     {
@@ -66,6 +73,15 @@ public class TelekinesisInteraction : MonoBehaviour
     {
         distance = Vector3.Distance(this.transform.position, _player.transform.position);
         //Debug.Log(distance);
+        if (telekinesis.m_ActiveObject != null)
+        {
+            otherHand.otherHandObject = telekinesis.m_ActiveObject.transform;
+        }
+        else
+        {
+            otherHand.otherHandObject = null;
+        }
+        
 
         localVelocity = transform.InverseTransformDirection(this.GetComponent<HandPhysics>().handCollider.GetComponent<Rigidbody>().velocity);
 
@@ -73,11 +89,12 @@ public class TelekinesisInteraction : MonoBehaviour
         {
             controllerAsignment = ControllerAsignment.mainHand;
             otherHand.controllerAsignment = ControllerAsignment.offHand;
+            
 
             if (telekinesis.m_fDistance >= 0 && distance < maxArmDistance && distance > minArmDistance)
             {
                 telekinesis.m_fDistance += map(localVelocity.z, -velocityRange, velocityRange, -velocityNewRange, velocityNewRange);
-                time = 0;
+                //time = 0;
             }
 
             if (distance >= maxArmDistance)
@@ -148,25 +165,137 @@ public class TelekinesisInteraction : MonoBehaviour
             distanceCloseSet();
         }
 
+        if (controllerAsignment == ControllerAsignment.either)
+        {
+            otherHandObject = null;
+        }
+
+        if (telekinesis.m_ActiveObject == null && otherHandObject == null)
+        {
+            controllerAsignment = ControllerAsignment.either;
+        }
 
 
 
 
+        if (inputSource == SteamVR_Input_Sources.LeftHand && controllerAsignment == ControllerAsignment.offHand)
+        {
+            
+            SteamVR_Behaviour_Skeleton skeleton = player.hands[0].skeleton;
+            foreach(var fingerCurl in skeleton.fingerCurls)
+            {
+                palmOpen = false;
+                if (fingerCurl <= 0.1)
+                {
+                    palmOpen = true;
+                }
+            }
 
+            if (palmOpen == true)
+            {
+                Debug.Log("Palm open");
+                Physics.Raycast(transform.position, transform.TransformDirection(Vector3.right), out hit, 1000);
+                Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.right));
+            }
 
+        }
+        else if (inputSource == SteamVR_Input_Sources.RightHand && controllerAsignment == ControllerAsignment.offHand )
+        {
+            
+            SteamVR_Behaviour_Skeleton skeleton = player.hands[1].skeleton;
+            foreach(var fingerCurl in skeleton.fingerCurls)
+            {
+                palmOpen = false;
+                if (fingerCurl <= 0.1)
+                {
+                    palmOpen = true;
+                }
+            }
 
+            if (palmOpen == true && Physics.Raycast(transform.position, transform.TransformDirection(Vector3.left), out hit, 1000))
+            {
+                Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.left)* 100, Color.red);
+
+                hitObject = hit.transform.gameObject;
+                
+                if (hit.collider.CompareTag("Telekinesis Object") && !freezeRoutineRunning)
+                {
+                    try
+                    {
+                        otherHandObject = otherHand.telekinesis.m_ActiveObject.transform;
+                        StartCoroutine(FreezeObject(hit.transform.gameObject));
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        freezeRoutineRunning = false;
+                        Console.WriteLine(e);
+                    }
+                    
+                }
+            }
+        }
         //telekinesis.m_fDistance = map(localVelocity.z, -10, 10, -0.1f, 0.1f);
     }
 
+    private IEnumerator FreezeObject(GameObject obj)
+    {
+        freezeRoutineRunning = true;
+        float time = 0;
+        if (otherHandObject != null)
+        {
+            TelekinesisObject telekinesisObject = otherHand.telekinesis.m_ActiveObject;
+            GameObject tObject = otherHandObject.gameObject;
+
+            if (telekinesisObject.frozen)
+            {
+                freezeRoutineRunning = false;
+                yield break;
+            }
+                
+
+            GameObject sliderCanvas = GameObject.FindWithTag("Slider Canvas");
+            Slider slider = sliderCanvas.GetComponentInChildren<Slider>(includeInactive: true);
+            slider.GetComponentInParent<Canvas>(includeInactive: true).enabled = true;
+            
+            if (ReferenceEquals(obj, tObject) && tObject != null)
+            {
+                while (time < 1 && ReferenceEquals(obj, hit.transform.gameObject))
+                {
+                    slider.value = time;
+                    sliderCanvas.transform.position = tObject.transform.position;
+                    time += Time.deltaTime;
+                    Debug.Log("freezing " + time);
+                    yield return null;
+                }
+                
+                if (time >= 1)
+                {
+                    Rigidbody rb = obj.GetComponent<Rigidbody>();
+                    rb.constraints = RigidbodyConstraints.FreezeAll;
+                    telekinesisObject.frozen = true;
+                }
+                slider.GetComponentInParent<Canvas>(includeInactive: true).enabled = false;
+            }
+        }
+
+        freezeRoutineRunning = false;
+        yield return null;
+    }
+    
+    
+
     private Vector3 initialForward;
+    private Vector3 startPos;
+    private Quaternion currentRot;
     public void Rotate()
     {
+
         
-        
-        Vector3 handDirection = palm.position - otherHand.transform.position;
-        Quaternion lookRotation = Quaternion.LookRotation(handDirection, Vector3.up);
+        Vector3 handDirection = Vector3.Normalize(transform.position - otherHand.transform.position);
+        //Quaternion lookRotation =  //Quaternion.LookRotation(handDirection, Vector3.up);
         //Quaternion finalRotation = Quaternion.Euler(Vector3.Cross(lookRotation.eulerAngles,  _initialRotation.eulerAngles));
-        otherHandObject.rotation = lookRotation * quaternion.Euler(initialForward);
+       // otherHandObject.rotation = lookRotation * quaternion.Euler(initialForward);
+        otherHandObject.rotation = Quaternion.FromToRotation(startPos, handDirection) * currentRot;
 
     }
 
@@ -175,6 +304,8 @@ public class TelekinesisInteraction : MonoBehaviour
         if (controllerAsignment == ControllerAsignment.offHand)
         {
             
+            
+            
             // Get the rotation for the grabbed object from the other hand
             otherHandObject = otherHand.telekinesis.m_ActiveObject.transform;
             _initialRotation = otherHandObject.rotation;
@@ -182,6 +313,10 @@ public class TelekinesisInteraction : MonoBehaviour
             initialForward = otherHandObject.forward;
             grabPoint = palm.GetComponent<Collider>().ClosestPoint(otherHand.transform.position);
             isRotating = true;
+            
+            
+            startPos = Vector3.Normalize(transform.position - otherHand.transform.position);
+            currentRot = otherHandObject.rotation;
         }
 
     }

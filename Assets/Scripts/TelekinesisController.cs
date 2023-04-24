@@ -22,7 +22,7 @@ public class TelekinesisController : MonoBehaviour
     void Update()
     {
 //        Debug.Log(player.hands[1].transform.localEulerAngles.normalized);
-        if (player.hands[0] != null)
+        /*if (player.hands[0] != null)
         {
             SteamVR_Behaviour_Skeleton skeleton = Player.instance.hands[0].skeleton;
 
@@ -40,6 +40,6 @@ public class TelekinesisController : MonoBehaviour
                 Debug.Log("Palm open");
             }
             
-        }
+        }*/
     }
 }

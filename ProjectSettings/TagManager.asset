@@ -13,6 +13,8 @@ TagManager:
   - Fire
   - Water
   - Ambulance
+  - Telekinesis Object
+  - Slider Canvas
   layers:
   - Default
   - TransparentFX
