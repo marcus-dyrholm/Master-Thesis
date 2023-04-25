@@ -45,8 +45,10 @@ public class TelekinesisInteraction : MonoBehaviour
     Transform palm;
 
     private bool palmOpen;
+    private bool coneHitOnObject = false;
     public bool freezeRoutineRunning;
-    private RaycastHit hit;
+    private RaycastHit[] hits;
+    private Physics physics;
 
     public enum ControllerAsignment
     {
@@ -197,18 +199,28 @@ public class TelekinesisInteraction : MonoBehaviour
                 }
             }
 
-            if (palmOpen == true && Physics.Raycast(transform.position, transform.TransformDirection(Vector3.right), out hit, 1000))
+            if (palmOpen == true)
             {
+                hits = physics.ConeCastAll(transform.position, 50, transform.TransformDirection(Vector3.right), 100, 5);
                 Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.right)* 100, Color.red);
 
-                hitObject = hit.transform.gameObject;
+                foreach (var hit in hits)
+                {
+                    coneHitOnObject = false;
+                    if (hit.collider.CompareTag("Telekinesis Object"))
+                    {
+                        coneHitOnObject = true;
+                        hitObject = hit.transform.gameObject;
+                        break;
+                    }
+                }
                 
-                if (hit.collider.CompareTag("Telekinesis Object") && !freezeRoutineRunning)
+                if (coneHitOnObject && !freezeRoutineRunning)
                 {
                     try
                     {
                         otherHandObject = otherHand.telekinesis.m_ActiveObject.transform;
-                        StartCoroutine(FreezeObject(hit.transform.gameObject));
+                        StartCoroutine(FreezeObject(hitObject));
                     }
                     catch (NullReferenceException e)
                     {
@@ -233,18 +245,28 @@ public class TelekinesisInteraction : MonoBehaviour
                 }
             }
 
-            if (palmOpen == true && Physics.Raycast(transform.position, transform.TransformDirection(Vector3.left), out hit, 1000))
+            if (palmOpen == true)
             {
+                hits = physics.ConeCastAll(transform.position, 50, transform.TransformDirection(Vector3.left), 100, 5);
                 Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.left)* 100, Color.red);
 
-                hitObject = hit.transform.gameObject;
+                foreach (var hit in hits)
+                {
+                    coneHitOnObject = false;
+                    if (hit.collider.CompareTag("Telekinesis Object"))
+                    {
+                        coneHitOnObject = true;
+                        hitObject = hit.transform.gameObject;
+                        break;
+                    }
+                }
                 
-                if (hit.collider.CompareTag("Telekinesis Object") && !freezeRoutineRunning)
+                if (coneHitOnObject && !freezeRoutineRunning)
                 {
                     try
                     {
                         otherHandObject = otherHand.telekinesis.m_ActiveObject.transform;
-                        StartCoroutine(FreezeObject(hit.transform.gameObject));
+                        StartCoroutine(FreezeObject(hitObject));
                     }
                     catch (NullReferenceException e)
                     {
@@ -279,12 +301,11 @@ public class TelekinesisInteraction : MonoBehaviour
             
             if (ReferenceEquals(obj, tObject) && tObject != null)
             {
-                while (time < 1 && ReferenceEquals(obj, hit.transform.gameObject))
+                while (time < 1 && ReferenceEquals(obj, hitObject))
                 {
                     slider.value = time;
                     sliderCanvas.transform.position = tObject.transform.position;
                     time += Time.deltaTime;
-                    Debug.Log("freezing " + time);
                     yield return null;
                 }
                 
