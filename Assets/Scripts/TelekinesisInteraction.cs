@@ -124,7 +124,7 @@ public class TelekinesisInteraction : MonoBehaviour
 
             //Rotation
 
-            if (!otherHand.isRotating)
+            if (!otherHand.isRotating && !telekinesis.m_ActiveObject.frozen)
             {
                 GameObject ActiveGO = telekinesis.m_ActiveObject.gameObject;
             
@@ -139,13 +139,13 @@ public class TelekinesisInteraction : MonoBehaviour
 
         }
         
-        if (controllerAsignment == ControllerAsignment.either || otherHand.controllerAsignment == ControllerAsignment.either || SteamVR_Actions._default.GrabPinch.GetStateUp(inputSource) )
+        if (controllerAsignment == ControllerAsignment.either || otherHand.controllerAsignment == ControllerAsignment.either || SteamVR_Actions._default.GrabGrip.GetStateUp(inputSource) )
         {
             isRotating = false;
             telekinesis.enabled = true;
         }
 
-        if (SteamVR_Actions._default.GrabPinch.GetStateDown(inputSource) && controllerAsignment == ControllerAsignment.offHand)
+        if (SteamVR_Actions._default.GrabGrip.GetStateDown(inputSource) && controllerAsignment == ControllerAsignment.offHand)
         {
             GrabbedForRotation();
         }
@@ -178,6 +178,12 @@ public class TelekinesisInteraction : MonoBehaviour
 
 
 
+
+        //telekinesis.m_fDistance = map(localVelocity.z, -10, 10, -0.1f, 0.1f);
+    }
+
+    private void FixedUpdate()
+    {
         if (inputSource == SteamVR_Input_Sources.LeftHand && controllerAsignment == ControllerAsignment.offHand)
         {
             
@@ -191,11 +197,26 @@ public class TelekinesisInteraction : MonoBehaviour
                 }
             }
 
-            if (palmOpen == true)
+            if (palmOpen == true && Physics.Raycast(transform.position, transform.TransformDirection(Vector3.right), out hit, 1000))
             {
-                Debug.Log("Palm open");
-                Physics.Raycast(transform.position, transform.TransformDirection(Vector3.right), out hit, 1000);
-                Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.right));
+                Debug.DrawRay(transform.position, transform.TransformDirection(Vector3.right)* 100, Color.red);
+
+                hitObject = hit.transform.gameObject;
+                
+                if (hit.collider.CompareTag("Telekinesis Object") && !freezeRoutineRunning)
+                {
+                    try
+                    {
+                        otherHandObject = otherHand.telekinesis.m_ActiveObject.transform;
+                        StartCoroutine(FreezeObject(hit.transform.gameObject));
+                    }
+                    catch (NullReferenceException e)
+                    {
+                        freezeRoutineRunning = false;
+                        Console.WriteLine(e);
+                    }
+                    
+                }
             }
 
         }
@@ -234,7 +255,6 @@ public class TelekinesisInteraction : MonoBehaviour
                 }
             }
         }
-        //telekinesis.m_fDistance = map(localVelocity.z, -10, 10, -0.1f, 0.1f);
     }
 
     private IEnumerator FreezeObject(GameObject obj)
