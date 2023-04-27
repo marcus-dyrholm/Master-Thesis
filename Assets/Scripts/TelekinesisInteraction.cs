@@ -207,7 +207,7 @@ public class TelekinesisInteraction : MonoBehaviour
                 foreach (var hit in hits)
                 {
                     coneHitOnObject = false;
-                    if (hit.collider.CompareTag("Telekinesis Object"))
+                    if (hit.collider.CompareTag("Telekinesis Object") && ReferenceEquals(hit.transform.gameObject, otherHand.telekinesis.m_ActiveObject.gameObject))
                     {
                         coneHitOnObject = true;
                         hitObject = hit.transform.gameObject;
@@ -253,7 +253,7 @@ public class TelekinesisInteraction : MonoBehaviour
                 foreach (var hit in hits)
                 {
                     coneHitOnObject = false;
-                    if (hit.collider.CompareTag("Telekinesis Object"))
+                    if (hit.collider.CompareTag("Telekinesis Object")&& ReferenceEquals(hit.transform.gameObject, otherHand.telekinesis.m_ActiveObject.gameObject))
                     {
                         coneHitOnObject = true;
                         hitObject = hit.transform.gameObject;
