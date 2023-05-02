@@ -136,7 +136,12 @@ public class TelekinesisInteraction : MonoBehaviour
                 {
                     rotationAngle -= 360;
                 }
-                ActiveGO.transform.RotateAround(ActiveGO.transform.position, playerToObject, rotationAngle * 2 * Time.deltaTime);
+
+                if (Math.Abs(rotationAngle) > 60)
+                {
+                    ActiveGO.transform.RotateAround(ActiveGO.transform.position, playerToObject, rotationAngle * 2 * Time.deltaTime);
+                }
+                
             }
 
         }
@@ -207,7 +212,7 @@ public class TelekinesisInteraction : MonoBehaviour
                 foreach (var hit in hits)
                 {
                     coneHitOnObject = false;
-                    if (hit.collider.CompareTag("Telekinesis Object") && ReferenceEquals(hit.transform.gameObject, otherHand.telekinesis.m_ActiveObject.gameObject))
+                    if (hit.collider.CompareTag("Telekinesis Object") && otherHandObject.gameObject == hit.transform.gameObject)
                     {
                         coneHitOnObject = true;
                         hitObject = hit.transform.gameObject;
@@ -232,6 +237,8 @@ public class TelekinesisInteraction : MonoBehaviour
             }
 
         }
+        
+    
         else if (inputSource == SteamVR_Input_Sources.RightHand && controllerAsignment == ControllerAsignment.offHand )
         {
             
@@ -253,7 +260,7 @@ public class TelekinesisInteraction : MonoBehaviour
                 foreach (var hit in hits)
                 {
                     coneHitOnObject = false;
-                    if (hit.collider.CompareTag("Telekinesis Object")&& ReferenceEquals(hit.transform.gameObject, otherHand.telekinesis.m_ActiveObject.gameObject))
+                    if (hit.collider.CompareTag("Telekinesis Object") && otherHandObject.gameObject == hit.transform.gameObject)
                     {
                         coneHitOnObject = true;
                         hitObject = hit.transform.gameObject;
