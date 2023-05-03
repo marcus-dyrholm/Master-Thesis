@@ -98,7 +98,12 @@ public class Telekinesis : MonoBehaviour
     public GameObject trackingObject;
     void Update()
     {
-        
+        if (_telekinesisActive && m_ActiveObject == null)
+        {
+            telekinesisEnded.Invoke();
+            _telekinesisActive = false;
+            Detach();
+        }
 
 
 
@@ -186,24 +191,25 @@ public class Telekinesis : MonoBehaviour
                 m_MagicBeamPoints[2] = m_ActiveObject.transform.position;
 
                 Vector3[] Curve = QuadraticBezierCurve(m_MagicBeamPoints[0], m_MagicBeamPoints[1], m_MagicBeamPoints[2], m_PathParticleCount);
+
+                Rigidbody rigidBody = m_ActiveObject.gameObject.GetComponent<Rigidbody>();
+                Vector3 targetPos = (transform.position + (transform.forward * m_fDistance));
+                float travelDistance = Vector3.Distance(targetPos, m_ActiveObject.transform.position);
+                rigidBody.drag = Remap(Mathf.Min(travelDistance, .1f), m_InitialDrag, 5, 5, m_InitialDrag);
+                rigidBody.AddForce((targetPos - m_ActiveObject.transform.position) * (travelDistance * m_FollowSpeed) * _additionalForce);
+                force = (targetPos - m_ActiveObject.transform.position) * (travelDistance * m_FollowSpeed) * _additionalForce;
+                //Debug.Log(Cross(targetPos - m_ActiveObject.transform.position));
+
+                Vector3 inverseTransform = this.transform.InverseTransformDirection(force);
+                //Debug.Log(inverseTransform);
             }
             else
             {
-                lightningMat = m_ActiveObject.GetComponent<MeshRenderer>();
-                lightningMat.material.SetFloat(Shader.PropertyToID("Width"), 0.0f);
+
             }
 
 
-            Rigidbody rigidBody = m_ActiveObject.gameObject.GetComponent<Rigidbody>();
-            Vector3 targetPos = (transform.position + (transform.forward * m_fDistance));
-            float travelDistance = Vector3.Distance(targetPos, m_ActiveObject.transform.position);
-            rigidBody.drag = Remap(Mathf.Min(travelDistance, .1f), m_InitialDrag, 5, 5, m_InitialDrag);
-            rigidBody.AddForce((targetPos - m_ActiveObject.transform.position) * (travelDistance * m_FollowSpeed) * _additionalForce);
-            force = (targetPos - m_ActiveObject.transform.position) * (travelDistance * m_FollowSpeed) * _additionalForce;
-            //Debug.Log(Cross(targetPos - m_ActiveObject.transform.position));
 
-            Vector3 inverseTransform = this.transform.InverseTransformDirection(force);
-            //Debug.Log(inverseTransform);
 
 
 

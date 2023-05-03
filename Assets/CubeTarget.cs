@@ -8,17 +8,19 @@ public class CubeTarget : MonoBehaviour
     private Collider boxCollider;
     private Bounds bounds;
     private GameObject sphere;
+    private PositionTest positionTest;
 
-    private void Start()
+    private void OnEnable()
     {
-        boxCollider = GetComponent<Collider>();
-        bounds = boxCollider.bounds;
+        positionTest = FindObjectOfType<PositionTest>();
     }
 
     private void Update()
     {
+        boxCollider = GetComponent<Collider>();
+        bounds = boxCollider.bounds;
         // Get the bounds of the box collider
-        
+
 
         if (sphere == null)
         {
@@ -33,7 +35,7 @@ public class CubeTarget : MonoBehaviour
             Mathf.Abs(relativePos.y) + sphere.transform.localScale.y / 2 <= bounds.extents.y &&
             Mathf.Abs(relativePos.z) + sphere.transform.localScale.z / 2 <= bounds.extents.z)
         {
-            Debug.Log("The sphere is fully inside the box collider");
+            positionTest.ProgressTest();
         }
         else
         {
