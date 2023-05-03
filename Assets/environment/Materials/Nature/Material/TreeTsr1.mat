@@ -96,6 +96,8 @@ Material:
     - _AtumConverter: 0.931
     - _PlantsGrowSpeed: 0
     - _PlantsSnowAmount: 0
+    - _QueueControl: 0
+    - _QueueOffset: 0
     - _WeetnesPlants: 0
     - _WindDensity: 0.5
     - _WindStrength: 4
