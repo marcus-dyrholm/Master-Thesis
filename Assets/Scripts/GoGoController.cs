@@ -101,6 +101,7 @@ public class GoGoController : MonoBehaviour {
     private bool m_OriginalGravity;
     private readonly float m_InitialAngularDrag;
 
+
     void Awake()
     {
         newPosesAction = SteamVR_Events.NewPosesAction(OnNewPoses);
@@ -165,6 +166,16 @@ public class GoGoController : MonoBehaviour {
         {
             initPose = Vector3.zero;
         }
+
+        if (objectInHand != null)
+        {
+            objectInHand.GetComponent<Rigidbody>().velocity = Vector3.zero;
+        }
+
+        if (objectInHand == null)
+        {
+            ReleaseObject();
+        }
     }
 
    
@@ -214,11 +225,9 @@ public class GoGoController : MonoBehaviour {
         joint.connectedBody = objectInHand.GetComponent<Rigidbody>();
 
         Rigidbody rigidBody = objectInHand.gameObject.GetComponent<Rigidbody>();
+        
 
-        rigidBody.drag = m_InitialDrag;
-        rigidBody.angularDrag = m_InitialAngularDrag;
-        rigidBody.useGravity = m_OriginalGravity;
-        rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
+        //rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
     }
 
     // 3
@@ -227,16 +236,19 @@ public class GoGoController : MonoBehaviour {
         FixedJoint fx = gameObject.AddComponent<FixedJoint>();
         fx.breakForce = 20000;
         fx.breakTorque = 20000;
+        fx.massScale = 1000;
+        fx.connectedMassScale = 1000;
         return fx;
     }
 
     private void ReleaseObject()
     {
-        if (objectInHand != null && GetComponent<FixedJoint>())
+        if (GetComponent<FixedJoint>())
         {
             GetComponent<FixedJoint>().connectedBody = null;
             Destroy(GetComponent<FixedJoint>());
 
+            /*
             Rigidbody rigidBody = objectInHand.GetComponent<Rigidbody>();
 
             rigidBody.drag = m_InitialDrag;
@@ -244,8 +256,11 @@ public class GoGoController : MonoBehaviour {
             rigidBody.useGravity = !m_OriginalGravity;
             rigidBody.collisionDetectionMode = CollisionDetectionMode.Discrete;
             //m_fDistance = 0f;
+            */
 
-            rigidBody.AddForce(m_DropVel.x * m_ThrowForce, m_DropVel.y * m_ThrowForce, m_DropVel.z * m_ThrowForce, ForceMode.Impulse);
+            //rigidBody.AddForce(m_DropVel.x * m_ThrowForce, m_DropVel.y * m_ThrowForce, m_DropVel.z * m_ThrowForce, ForceMode.Impulse);
+
+            objectInHand = null;
         }
         /*
         // 1

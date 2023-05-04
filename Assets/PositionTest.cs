@@ -59,7 +59,7 @@ public class PositionTest : MonoBehaviour
             startTimer = true;
         }
 
-        if (time >= 30 && !trainingEnded)
+        if (time >= 240 && !trainingEnded)
         {
             trainingEnded = true;
             EndTraining();
@@ -78,6 +78,7 @@ public class PositionTest : MonoBehaviour
         if (timesComplete == 6)
         {
             startTimer = false;
+            Debug.Log("Position test: " + time);
             return;
         }
 

@@ -28,11 +28,15 @@ public class TelekinesisInteraction : MonoBehaviour
 
     private Vector3 velocity = Vector3.zero;
 
-    private GameObject _player;
+    //private GameObject _player;
+
+    string shoulder;
+    public GameObject shoulderGO;
+    public float dist;
 
     //private static float time;
 
-    public SteamVR_Action_Boolean setdistance; //Grab Pinch is the trigger, select from inspecter
+    //public SteamVR_Action_Boolean setdistance; //Grab Pinch is the trigger, select from inspecter
     public SteamVR_Input_Sources inputSource = SteamVR_Input_Sources.Any;//which controller
 
     public TelekinesisInteraction otherHand;
@@ -63,7 +67,17 @@ public class TelekinesisInteraction : MonoBehaviour
 
     private void Start()
     {
-        _player = GameObject.FindGameObjectWithTag("RightShoulder");
+
+        if (inputSource == SteamVR_Input_Sources.LeftHand)
+        {
+            shoulder = "Left Shoulder";
+        }
+        else
+        {
+            shoulder = "RightShoulder";
+        }
+
+        shoulderGO = GameObject.FindGameObjectWithTag(shoulder);
         controllerAsignment = ControllerAsignment.either;
         telekinesis.telekinesisEnded.AddListener(ResetControllerStates);
         //maxArmDistance = PlayerPrefs.GetFloat("MaxArmDistance");
@@ -73,7 +87,8 @@ public class TelekinesisInteraction : MonoBehaviour
 
     private void Update()
     {
-        distance = Vector3.Distance(this.transform.position, _player.transform.position);
+        distance = Vector3.Distance(this.transform.position, shoulderGO.transform.position);
+        dist = distance;
         //Debug.Log(distance);
         if (telekinesis.m_ActiveObject != null)
         {
@@ -139,6 +154,14 @@ public class TelekinesisInteraction : MonoBehaviour
 
                 if (Math.Abs(rotationAngle) > 60)
                 {
+                    if (rotationAngle > 0)
+                    {
+                        rotationAngle -= 60;
+                    }
+                    if (rotationAngle < 0)
+                    {
+                        rotationAngle += 60;
+                    }
                     ActiveGO.transform.RotateAround(ActiveGO.transform.position, playerToObject, rotationAngle * 2 * Time.deltaTime);
                 }
                 
@@ -376,7 +399,7 @@ public class TelekinesisInteraction : MonoBehaviour
 
     private void distanceSet()
     {
-        maxArmDistance = Vector3.Distance(this.transform.position, _player.transform.position);
+        maxArmDistance = Vector3.Distance(this.transform.position, GameObject.FindGameObjectWithTag(shoulder).transform.position);
         maxArmDistance -= distanceScalar;
         Debug.Log("max arm distance = " + maxArmDistance);
         //PlayerPrefs.SetFloat("MaxArmDistance", maxArmDistance);
@@ -384,7 +407,7 @@ public class TelekinesisInteraction : MonoBehaviour
 
     private void distanceCloseSet()
     {
-        minArmDistance = Vector3.Distance(this.transform.position, _player.transform.position);
+        minArmDistance = Vector3.Distance(this.transform.position, GameObject.FindGameObjectWithTag(shoulder).transform.position);
         minArmDistance += distanceScalar;
         Debug.Log("min arm distance = " + minArmDistance);
         //PlayerPrefs.SetFloat("MinArmDistance", minArmDistance);
