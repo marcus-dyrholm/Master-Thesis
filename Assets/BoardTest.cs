@@ -29,7 +29,7 @@ public class BoardTest : MonoBehaviour
             time += Time.deltaTime;
         }
 
-        if (collidingObjects == 5 && startTimer)
+        if (collidingObjects == 7 && startTimer)
         {
             startTimer = false;
             Debug.Log("Board test: " + time);
